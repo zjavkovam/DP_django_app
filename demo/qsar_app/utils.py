@@ -3,7 +3,6 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors
 import os
 import joblib
-import cirpy
 from collections import Counter
 import re
 import numpy as np
@@ -11,14 +10,10 @@ import sklearn
 from rdkit.Chem import Draw
 from rdkit.Chem import rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import requests
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 import pubchempy as pcp
-import shap
 import json
 
 # Load the original feature names (used during training)
