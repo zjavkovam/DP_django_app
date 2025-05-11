@@ -11,8 +11,8 @@
 
     <style>
         #model-parameters {
-            list-style-type: none;  /* Removes the bullet points */
-            padding-left: 0;        /* Removes the default padding */
+            list-style-type: none;
+            padding-left: 0;
         }
     </style>
 </head>
@@ -29,14 +29,20 @@
 
         <form id="prediction-form" method="POST" class="d-flex flex-column align-items-center p-4 shadow rounded bg-light">
             {% csrf_token %}
-            
-            <div class="mb-3 w-75">
+
+            <div class="mb-3 w-50 position-relative">
                 <input type="text" id="inputData" class="form-control shadow-sm" placeholder="Enter SMILES or CAS" required>
+                <span 
+                class="text-danger fw-bold position-absolute" 
+                style="top: 10px; right: -25px; cursor: pointer;" 
+                data-bs-toggle="modal" 
+                data-bs-target="#sampleModal"
+                >?</span>
+            
             </div>
-        
+
             <button type="submit" class="btn btn-primary w-50 shadow">Predict</button>
         </form>
-        
 
         <div id="loading" class="text-center mt-4 d-none">
             <div class="spinner-border text-primary" role="status">
@@ -50,14 +56,12 @@
 
             <div class="row text-center mt-3">
                 <div class="col-md-12">
-                    <h5>Trust Score </h4>
+                    <h5>Trust Score</h5>
                     <p id="trust-score" class="fw-bold"></p>
                 </div>
             </div>
 
-            <div class="my-5">
-                <hr>
-            </div>
+            <div class="my-5"><hr></div>
 
             <div class="row text-center mt-3">
                 <div class="col-md-4">
@@ -82,14 +86,12 @@
                         <strong>Size:</strong> 804 Compounds from EU_REACH, JP_CHRIP, NZ_CCID, US_HSDB <br>
                         <strong>Chemical Format:</strong> Molecular Descriptors <br>
                         <strong>Endpoint:</strong> Binary (Irritant vs. Non-Irritant) Based on OECD TG 404 <br>
-                        <strong>Validation:</strong> Training Set (80%) vs. Test Set (20%) with 5-Fold Cross-Validation <br>  
+                        <strong>Validation:</strong> Training Set (80%) vs. Test Set (20%) with 5-Fold Cross-Validation <br>
                     </p>
                 </div>
             </div>
-            
-            <div class="my-5">
-                <hr>
-            </div>
+
+            <div class="my-5"><hr></div>
 
             <h3 class="mt-5">More Information About Model</h3>
             <div class="row justify-content-center">
@@ -109,6 +111,7 @@
         <p>&copy; 2025 DP</p>
     </footer>
 
+    <!-- Existing modal -->
     <div class="modal fade" id="descriptorModal" tabindex="-1" aria-labelledby="descriptorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -123,38 +126,65 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("[data-bs-toggle='tooltip']").tooltip();
+    <!-- New Sample Modal -->
+    <div class="modal fade" id="sampleModal" tabindex="-1" aria-labelledby="sampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sampleModalLabel">Test Sample of Chemicals</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>SMILES</th>
+                                <th>Label</th>
+                                <th>CAS Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Formic acid</td><td>C(=O)O</td><td>I</td><td>64-18-6</td></tr>
+                            <tr><td>Dicamba-dimethylammonium</td><td>CNC.COC1=C(C=CC(=C1C(=O)O)Cl)Cl</td><td>NI</td><td>2300-66-5</td></tr>
+                            <tr><td>Alpha-terpineol</td><td>CC1=CCC(CC1)C(C)(C)O</td><td>I</td><td>98-55-5</td></tr>
+                            <tr><td>Thifensulfuron methyl</td><td>CC1=NC(=NC(=N1)OC)NC(=O)NS(=O)(=O)C2=C(SC=C2)C(=O)OC</td><td>NI</td><td>79277-27-3</td></tr>
+                            <tr><td>Glyoxylic acid monohydrate</td><td>C(=O)C(=O)O.O</td><td>I</td><td>563-96-2</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            $("#prediction-form").submit(function(event) {
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            $("#prediction-form").submit(function (event) {
                 event.preventDefault();
                 
                 var inputData = $("#inputData").val();
-                var selectedModel = $("#modelSelect").val();
                 var csrfToken = $("input[name=csrfmiddlewaretoken]").val();
-    
+
                 $("#loading").removeClass("d-none");
                 $("#results").addClass("d-none");
-    
+
                 $.ajax({
                     url: "/predict/",
                     type: "POST",
-                    data: { inputData: inputData, model: selectedModel, csrfmiddlewaretoken: csrfToken },
-                    success: function(response) {
+                    data: { inputData: inputData, csrfmiddlewaretoken: csrfToken },
+                    success: function (response) {
                         $("#loading").addClass("d-none");
                         $("#results").removeClass("d-none");
 
-                        var predictionText = response.prediction;
-                        var predictionElement = $("#prediction-output");
+                        $("#prediction-output").text(response.prediction)
+                            .removeClass("text-danger text-success")
+                            .addClass(response.prediction === "Irritant" ? "text-danger" : "text-success");
 
-                        predictionElement.text(predictionText);
-                        predictionElement.removeClass("text-danger text-success"); // Remove previous colors
-                        predictionElement.addClass(predictionText === "Irritant" ? "text-danger" : "text-success");
-                        
-                        $("#prediction-output").text(response.prediction).addClass(response.prediction === "Irritant" ? "text-danger" : "text-success");
-                        $("#model-info").text(response.model_used);
                         $("#trust-score").text(response.trust_score + "%");
                         $("#molecule-image").attr("src", response.molecule_image);
                         $("#roc-curve").attr("src", response.roc_curve);
@@ -164,14 +194,12 @@
                         $("#chem-smiles").text(response.smiles);
                         $("#chem-cas").text(response.casnr);
 
-                        // Clear the existing model parameters list
                         $("#model-parameters").empty();
-                        // Dynamically insert the model parameters into the list
-                        response.model_parameters.forEach(function(param) {
+                        response.model_parameters.forEach(function (param) {
                             $("#model-parameters").append('<li><strong>' + param.name + ':</strong> ' + param.value + '</li>');
                         });
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         $("#loading").addClass("d-none");
                         alert(xhr.responseJSON?.error || "An unknown error occurred.");
                     }
