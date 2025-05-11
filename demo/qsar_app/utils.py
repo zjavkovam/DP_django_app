@@ -345,7 +345,7 @@ def make_prediction(features, selected_model):
         "prediction": final_predictions[0],
         "trust_score": 85,
         "roc_curve": f"/static/{"stacking_aucroc.png"}",
-        "shap_plot": f"/static/{"ensambleshap.png"}" ,
+        "shap_plot": f"/static/{"ensamble_shap.png"}" ,
         "model_parameters": model_parameters,
     }
 

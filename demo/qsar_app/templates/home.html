@@ -104,7 +104,30 @@
                     <img id="shap-values" src="/static/RF_shap.png" alt="SHAP Values" class="img-fluid">
                 </div>
             </div>
+            <div class="container mt-5">
+                <h3 class="text-center mb-4">Explainability of the models</h3>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <img src="{% static 'RF_shap.png' %}" alt="Random Forest Explainability" class="img-fluid shadow-sm">
+                        <p class="mt-2">Random Forest</p>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="{% static 'xgb_shap.png' %}" alt="XGBoost Explainability" class="img-fluid shadow-sm">
+                        <p class="mt-2">XGBoost</p>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="{% static 'knn_shap.png' %}" alt="SVM Explainability" class="img-fluid shadow-sm">
+                        <p class="mt-2">SVM</p>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="{% static 'dt_shap.png' %}" alt="Decision Tree Explainability" class="img-fluid shadow-sm">
+                        <p class="mt-2">Decision Tree</p>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        
     </div>
 
     <footer class="text-center mt-5 p-3 bg-light">
@@ -155,7 +178,10 @@
                 </div>
             </div>
         </div>
+
+
     </div>
+
 
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
